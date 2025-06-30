@@ -1,0 +1,67 @@
+// URL短縮・アクセス解析サービス Prisma schema
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           BigInt    @id @default(autoincrement())
+  email        String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  urls         Url[]
+}
+
+model Url {
+  id           BigInt     @id @default(autoincrement())
+  user         User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId       BigInt?
+  originalUrl  String
+  shortCode    String     @unique @db.VarChar(10)
+  customAlias  String?    @unique @db.VarChar(20)
+  title        String?    @db.VarChar(255)
+  description  String?
+  expiresAt    DateTime?
+  passwordHash String?    @db.VarChar(255)
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  accessLogs   AccessLog[]
+  urlStats     UrlStats?
+}
+
+model AccessLog {
+  id          BigInt   @id @default(autoincrement())
+  url         Url      @relation(fields: [urlId], references: [id], onDelete: Cascade)
+  urlId       BigInt
+  ipAddress   String?  @db.Inet
+  userAgent   String?
+  referer     String?
+  countryCode String?  @db.Char(2)
+  region      String?  @db.VarChar(100)
+  city        String?  @db.VarChar(100)
+  deviceType  String?  @db.VarChar(20)
+  browser     String?  @db.VarChar(50)
+  os          String?  @db.VarChar(50)
+  accessedAt  DateTime @default(now())
+}
+
+model UrlStats {
+  urlId        BigInt   @id
+  url          Url      @relation(fields: [urlId], references: [id])
+  totalClicks  Int      @default(0)
+  uniqueClicks Int      @default(0)
+  lastAccessed DateTime?
+  updatedAt    DateTime @updatedAt
+}
+
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init

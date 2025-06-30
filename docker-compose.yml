@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: url_shortener
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
+  backend:
+    build: ./backend
+    command: npx ts-node-dev src/index.ts
+    volumes:
+      - ./backend:/app
+    ports:
+      - '3000:3000'
+    environment:
+      - DATABASE_URL=postgres://user:password@db:5432/url_shortener
+      - JWT_SECRET=your_jwt_secret
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - db
+      - redis
+
+  frontend:
+    build: ./frontend
+    command: npm run dev -- --host
+    volumes:
+      - ./frontend:/app
+    ports:
+      - '5173:5173'
+    environment:
+      - VITE_API_BASE_URL=http://localhost:3000
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
+  redis_data:
