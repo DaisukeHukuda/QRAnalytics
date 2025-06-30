@@ -18,10 +18,10 @@ COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/.env ./
 EXPOSE 3000
-CMD ["node", "dist/index.js"]
+CMD ["sh", "-c", "npm run migrate:deploy && node dist/index.js"]
 
 # --- 開発用 ---
 FROM base AS dev
 ENV NODE_ENV=development
 EXPOSE 3000
-CMD ["npx", "ts-node-dev", "src/index.ts"]
+CMD ["sh", "-c", "npm run migrate:deploy && npx ts-node-dev src/index.ts"]

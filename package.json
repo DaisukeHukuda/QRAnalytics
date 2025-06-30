@@ -1,0 +1,10 @@
+{
+  "name": "url-shortening-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:docker": "docker compose -f docker-compose.dev.yml up -d",
+    "prod:docker": "docker compose up -d",
+    "down:docker": "docker compose down"
+  }
+}

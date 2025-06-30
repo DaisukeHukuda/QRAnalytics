@@ -6,21 +6,35 @@ Docker Composeでローカル開発もクラウドデプロイも簡単です。
 
 ---
 
-## セットアップ手順（ローカル開発）
+## セットアップ手順（ローカル開発・本番）
 
-1. **リポジトリをクローン**
-   ```sh
-   git clone https://github.com/DaisukeHukuda/QRAnalytics.git
-   cd QRAnalytics
-   ```
-2. **環境変数ファイルを作成**
-   - `backend/.env.example` をコピーして `backend/.env` を作成し、各値を入力
-3. **Dockerで全サービス起動**
-   ```sh
-   docker compose up -d
-   ```
-4. **フロントエンドにアクセス**
-   - ブラウザで http://localhost:3000
+### 1. リポジトリをクローン
+```sh
+git clone https://github.com/DaisukeHukuda/QRAnalytics.git
+cd QRAnalytics
+```
+
+### 2. 環境変数ファイルを作成
+- `backend/.env.example` をコピーして `backend/.env` を作成し、各値を入力
+- `frontend/.env.example` も必要に応じてコピー
+
+### 3. 開発モードで起動（ホットリロード付き）
+```sh
+docker compose -f docker-compose.dev.yml up -d
+```
+- フロントエンド: http://localhost:3000
+- バックエンドAPI: http://localhost:3001
+
+### 4. 本番モードで起動
+```sh
+docker compose up -d
+```
+- フロントエンド・バックエンドとも本番ビルドで起動
+
+### 5. 開発再開時
+- パソコン再起動後も、上記コマンドを再実行するだけでOK
+
+---
 
 ---
 
